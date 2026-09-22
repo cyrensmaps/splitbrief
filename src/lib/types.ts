@@ -6,6 +6,8 @@ export type Project = {
   brief: string;
   client_persona: string;
   industry: string | null;
+  crit_notes: string | null;
+  crit_notes_generated_at: string | null;
   created_at: string;
 };
 

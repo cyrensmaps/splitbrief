@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/Navbar";
 import { ChatPane } from "@/components/ChatPane";
+import { CritNotes } from "@/components/CritNotes";
 import type { Message, Profile, Project } from "@/lib/types";
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -76,6 +77,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             initialMessages={mentorMessages}
           />
         </div>
+
+        <CritNotes
+          projectId={project.id}
+          initialNotes={project.crit_notes}
+          initialGeneratedAt={project.crit_notes_generated_at}
+        />
       </main>
     </div>
   );

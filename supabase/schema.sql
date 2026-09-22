@@ -19,13 +19,17 @@ create table if not exists projects (
   brief text not null,
   client_persona text not null,
   industry text,
+  crit_notes text,
+  crit_notes_generated_at timestamptz,
   created_at timestamptz not null default now()
 );
 
 -- If you're re-running this file against a database that already has the
--- projects table (from before the "generate a new job" feature), this adds
--- the missing column without touching existing rows.
+-- projects table (from before the "generate a new job" / "crit notes" features),
+-- this adds the missing columns without touching existing rows.
 alter table projects add column if not exists industry text;
+alter table projects add column if not exists crit_notes text;
+alter table projects add column if not exists crit_notes_generated_at timestamptz;
 
 -- Chat messages, one row per message, tagged to either the "client" or "mentor" thread.
 create table if not exists messages (
@@ -78,6 +82,10 @@ create policy "projects: owner can select" on projects
 drop policy if exists "projects: owner can insert" on projects;
 create policy "projects: owner can insert" on projects
   for insert with check (auth.uid() = user_id);
+
+drop policy if exists "projects: owner can update" on projects;
+create policy "projects: owner can update" on projects
+  for update using (auth.uid() = user_id);
 
 drop policy if exists "projects: owner can delete" on projects;
 create policy "projects: owner can delete" on projects

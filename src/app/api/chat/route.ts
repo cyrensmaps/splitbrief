@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { decryptApiKey } from "@/lib/crypto";
 import { getChatReply, type ChatMessage } from "@/lib/ai/provider";
 import { ARCHETYPES, clientSystemPrompt, mentorSystemPrompt } from "@/lib/ai/personas";
+import { formatTranscript } from "@/lib/ai/transcript";
 import type { Message, Profile, Project, Thread } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -113,13 +114,7 @@ export async function POST(request: Request) {
       .returns<Message[]>();
 
     if (clientRows && clientRows.length > 0) {
-      clientTranscript = clientRows
-        .map((row) => {
-          const speaker = row.role === "user" ? "Designer" : "Client";
-          const imageNote = row.image_url ? " [shared an image]" : "";
-          return `${speaker}: ${row.content}${imageNote}`;
-        })
-        .join("\n");
+      clientTranscript = formatTranscript(clientRows, "Client");
     }
   }
 
