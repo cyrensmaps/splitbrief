@@ -201,7 +201,7 @@ export function ChatPane({ projectId, thread, title, subtitle, accent, initialMe
             title="Attach an image"
             className="cursor-pointer rounded-md border border-[var(--border)] px-3 py-2 text-sm"
           >
-            📎
+            Attach
           </label>
           <button
             onClick={handleSend}

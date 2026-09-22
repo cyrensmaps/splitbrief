@@ -62,7 +62,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           <ChatPane
             projectId={project.id}
             thread="client"
-            title={`💬 ${project.client_persona}`}
+            title={project.client_persona}
             subtitle="Your client"
             accent="client"
             initialMessages={clientMessages}
@@ -70,7 +70,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           <ChatPane
             projectId={project.id}
             thread="mentor"
-            title="🧑‍🎨 Senior Designer"
+            title="Senior Designer"
             subtitle="Your mentor"
             accent="mentor"
             initialMessages={mentorMessages}
