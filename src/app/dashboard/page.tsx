@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/Navbar";
+import { ProjectCard } from "@/components/ProjectCard";
 import type { Project } from "@/lib/types";
 
 export default async function DashboardPage() {
@@ -38,13 +39,7 @@ export default async function DashboardPage() {
           <ul className="grid gap-4 sm:grid-cols-2">
             {projects.map((project) => (
               <li key={project.id}>
-                <Link
-                  href={`/projects/${project.id}`}
-                  className="block rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5 transition hover:border-[var(--brand)]"
-                >
-                  <h2 className="font-medium">{project.title}</h2>
-                  <p className="mt-2 line-clamp-2 text-sm text-[var(--muted)]">{project.brief}</p>
-                </Link>
+                <ProjectCard project={project} />
               </li>
             ))}
           </ul>
