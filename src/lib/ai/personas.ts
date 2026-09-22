@@ -93,7 +93,7 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateBrief(archetype: Archetype) {
+export function generateBrief() {
   const industry = pick(INDUSTRIES);
   const projectType = pick(PROJECT_TYPES);
   const clientName = pick(CLIENT_NAMES);

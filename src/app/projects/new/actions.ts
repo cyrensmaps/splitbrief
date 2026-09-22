@@ -9,7 +9,7 @@ export async function createProject(formData: FormData) {
   const archetype = ARCHETYPES.find((a) => a.id === archetypeId);
   if (!archetype) throw new Error("Unknown archetype");
 
-  const { title, brief, clientName } = generateBrief(archetype);
+  const { title, brief, clientName } = generateBrief();
 
   const supabase = await createClient();
   const {

@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SplitBrief
 
-## Getting Started
+Practice client conversations for graphic design work. Every project gives you two
+chats side by side: an AI playing a business client (with a distinct, sometimes
+difficult personality), and an AI senior designer mentor you can go to for
+feedback and advice. You can send images of your work to either one — they can
+look at and critique images, but never generate or edit them.
 
-First, run the development server:
+Training tool only. Bring your own Anthropic or OpenAI API key.
 
-```bash
+## One-time setup (do this before running the app)
+
+You'll need three free accounts: **Supabase** (database, login, image storage),
+**Vercel** (hosting), and you already have **GitHub** (code).
+
+### 1. Create a Supabase project
+
+1. Go to [supabase.com](https://supabase.com), sign up, and create a new project.
+2. Once it's created, open **Project Settings -> API**. You'll need three values
+   from this page in step 3 below: the **Project URL**, the **anon public** key,
+   and the **service_role** key (click "reveal" to see it).
+3. Open the **SQL Editor** (left sidebar), click **New query**, paste in the
+   entire contents of [`supabase/schema.sql`](supabase/schema.sql) from this
+   repo, and click **Run**. This creates all the tables and security rules the
+   app needs.
+4. By default Supabase requires users to confirm their email before logging in.
+   That's fine to leave on — when you sign up in the app, check your inbox for
+   the confirmation link.
+
+### 2. Set up your local environment file
+
+1. Copy `.env.example` to a new file named `.env.local` in the project root.
+2. Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from
+   Supabase step 1 above.
+3. Generate a random encryption secret by running this in a terminal in this
+   folder, and paste the output into `API_KEY_ENCRYPTION_SECRET`:
+   ```
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   This is used to encrypt your Anthropic/OpenAI API key before it's stored in
+   the database. Keep it secret and never commit it.
+
+### 3. Run it locally
+
+```
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000), sign up, confirm your
+email, then go to **Settings** and paste in your Anthropic or OpenAI API key
+before starting a project.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Deploy it (so you can use it outside your own computer)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push this repo to GitHub (already set up if you're reading this from there).
+2. Go to [vercel.com](https://vercel.com), sign up, click **Add New -> Project**,
+   and import this GitHub repo.
+3. In the "Environment Variables" step, add the same four values from your
+   `.env.local` file (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+   `SUPABASE_SERVICE_ROLE_KEY`, `API_KEY_ENCRYPTION_SECRET`).
+4. Click **Deploy**. Every future `git push` to the main branch will
+   automatically redeploy the live site — nothing else to configure.
 
-## Learn More
+## Changing colors
 
-To learn more about Next.js, take a look at the following resources:
+All colors live in one place: [`src/app/globals.css`](src/app/globals.css), in
+the `:root` block near the top, clearly marked. Change a hex value there and
+every page picks it up automatically.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure (for reference)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app/` — every page and route of the app (Next.js App Router: each folder
+  is a URL, `page.tsx` is what renders there)
+- `src/components/` — reusable UI pieces (chat panes, forms, nav bar)
+- `src/lib/ai/` — the client/mentor personas and the Anthropic/OpenAI adapter
+- `src/lib/supabase/` — database/auth connection helpers
+- `supabase/schema.sql` — the database schema, run once in Supabase's SQL editor
