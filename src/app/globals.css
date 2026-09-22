@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* ============================================================
+   COLORS — safe to edit. Change any hex value below and every
+   page picks it up automatically (no other files need editing).
+   ============================================================ */
+:root {
+  --background: #f7f7f5;
+  --foreground: #1a1a1a;
+  --surface: #ffffff;
+  --border: #e3e2de;
+  --muted: #6b6b66;
+
+  --brand: #2d2a4a;        /* primary buttons, links, active states */
+  --brand-foreground: #ffffff;
+
+  --client-accent: #c2571b;   /* Client chat pane accent color */
+  --client-accent-soft: #fbe9dd;
+
+  --mentor-accent: #1f6f5c;   /* Mentor chat pane accent color */
+  --mentor-accent-soft: #dff0ea;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-client-accent: var(--client-accent);
+  --color-client-accent-soft: var(--client-accent-soft);
+  --color-mentor-accent: var(--mentor-accent);
+  --color-mentor-accent-soft: var(--mentor-accent-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
