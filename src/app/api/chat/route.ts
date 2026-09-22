@@ -120,7 +120,12 @@ export async function POST(request: Request) {
 
   const systemPrompt =
     thread === "client"
-      ? clientSystemPrompt({ clientName: project.client_persona, brief: project.brief, archetype })
+      ? clientSystemPrompt({
+          clientName: project.client_persona,
+          brief: project.brief,
+          archetype,
+          difficultyId: project.difficulty,
+        })
       : mentorSystemPrompt({ brief: project.brief, archetype, clientTranscript });
 
   const apiKey = decryptApiKey(profile.api_key_encrypted);

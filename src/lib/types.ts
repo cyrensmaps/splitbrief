@@ -8,6 +8,7 @@ export type Project = {
   industry: string | null;
   crit_notes: string | null;
   crit_notes_generated_at: string | null;
+  difficulty: string;
   created_at: string;
 };
 

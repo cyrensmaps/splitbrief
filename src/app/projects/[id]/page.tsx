@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/Navbar";
 import { ChatPane } from "@/components/ChatPane";
 import { CritNotes } from "@/components/CritNotes";
+import { DIFFICULTIES } from "@/lib/ai/personas";
 import type { Message, Profile, Project } from "@/lib/types";
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -39,6 +40,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const mentorMessages = (messages ?? []).filter((m) => m.thread === "mentor");
 
   const needsSetup = !profile?.ai_provider || !profile.ai_model || !profile.api_key_encrypted;
+  const difficultyLabel = DIFFICULTIES.find((d) => d.id === project.difficulty)?.label ?? "Standard";
 
   return (
     <div className="min-h-screen">
@@ -64,7 +66,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             projectId={project.id}
             thread="client"
             title={project.client_persona}
-            subtitle="Your client"
+            subtitle={`Your client · ${difficultyLabel} difficulty`}
             accent="client"
             initialMessages={clientMessages}
           />

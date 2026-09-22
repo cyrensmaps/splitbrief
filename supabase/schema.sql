@@ -21,15 +21,18 @@ create table if not exists projects (
   industry text,
   crit_notes text,
   crit_notes_generated_at timestamptz,
+  difficulty text not null default 'standard' check (difficulty in ('mild', 'standard', 'intense')),
   created_at timestamptz not null default now()
 );
 
 -- If you're re-running this file against a database that already has the
--- projects table (from before the "generate a new job" / "crit notes" features),
--- this adds the missing columns without touching existing rows.
+-- projects table (from before the "generate a new job" / "crit notes" /
+-- "difficulty" features), this adds the missing columns without touching
+-- existing rows.
 alter table projects add column if not exists industry text;
 alter table projects add column if not exists crit_notes text;
 alter table projects add column if not exists crit_notes_generated_at timestamptz;
+alter table projects add column if not exists difficulty text not null default 'standard';
 
 -- Chat messages, one row per message, tagged to either the "client" or "mentor" thread.
 create table if not exists messages (

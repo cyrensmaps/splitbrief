@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { generateBriefPreview, createProject } from "@/app/projects/new/actions";
-import { PROJECT_TYPE_PACKS, type Archetype } from "@/lib/ai/personas";
+import { DIFFICULTIES, PROJECT_TYPE_PACKS, type Archetype } from "@/lib/ai/personas";
 
 type Preview = {
   archetypeId: string;
@@ -16,6 +16,7 @@ type Preview = {
 export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
   const [selected, setSelected] = useState<Archetype | null>(null);
   const [projectTypeId, setProjectTypeId] = useState<string>("");
+  const [difficultyId, setDifficultyId] = useState<string>("standard");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
     if (!preview) return;
     startTransition(async () => {
       try {
-        await createProject(preview);
+        await createProject({ ...preview, difficultyId });
       } catch (err) {
         // redirect() throws internally to signal navigation — that's not a real failure.
         const digest = (err as { digest?: string } | null)?.digest;
@@ -64,24 +65,44 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
 
         <h2 className="font-medium">{selected.label}</h2>
 
-        <label className="mt-4 flex flex-col gap-1 text-sm">
-          Project type
-          <select
-            value={projectTypeId}
-            onChange={(e) => {
-              setProjectTypeId(e.target.value);
-              generateFor(selected, e.target.value);
-            }}
-            className="w-fit rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
-          >
-            <option value="">Surprise me</option>
-            {PROJECT_TYPE_PACKS.map((pack) => (
-              <option key={pack.id} value={pack.id}>
-                {pack.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mt-4 flex flex-wrap gap-4">
+          <label className="flex flex-col gap-1 text-sm">
+            Project type
+            <select
+              value={projectTypeId}
+              onChange={(e) => {
+                setProjectTypeId(e.target.value);
+                generateFor(selected, e.target.value);
+              }}
+              className="w-fit rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
+            >
+              <option value="">Surprise me</option>
+              {PROJECT_TYPE_PACKS.map((pack) => (
+                <option key={pack.id} value={pack.id}>
+                  {pack.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1 text-sm">
+            Difficulty
+            <select
+              value={difficultyId}
+              onChange={(e) => setDifficultyId(e.target.value)}
+              className="w-fit rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
+            >
+              {DIFFICULTIES.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          {DIFFICULTIES.find((d) => d.id === difficultyId)?.description}
+        </p>
 
         {preview ? (
           <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">

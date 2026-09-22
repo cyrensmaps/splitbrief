@@ -35,6 +35,7 @@ export async function createProject(payload: {
   brief: string;
   clientName: string;
   industry: string;
+  difficultyId?: string;
 }) {
   const archetype = ARCHETYPES.find((a) => a.id === payload.archetypeId);
   if (!archetype) throw new Error("Unknown archetype");
@@ -54,6 +55,7 @@ export async function createProject(payload: {
       brief: payload.brief,
       client_persona: payload.clientName,
       industry: payload.industry,
+      difficulty: payload.difficultyId || "standard",
     })
     .select("id")
     .single();
