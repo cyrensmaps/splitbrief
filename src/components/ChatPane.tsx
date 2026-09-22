@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { createClient } from "@/lib/supabase/client";
 import type { Message, Thread } from "@/lib/types";
 
@@ -149,7 +151,11 @@ export function ChatPane({ projectId, thread, title, subtitle, accent, initialMe
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={signedUrls[m.image_url]} alt="Shared design work" className="mb-2 max-h-48 rounded-md" />
               )}
-              {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+              {m.content && (
+                <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-pre:my-1">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
         ))}
