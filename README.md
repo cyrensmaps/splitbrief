@@ -16,9 +16,9 @@ You'll need three free accounts: **Supabase** (database, login, image storage),
 ### 1. Create a Supabase project
 
 1. Go to [supabase.com](https://supabase.com), sign up, and create a new project.
-2. Once it's created, open **Project Settings -> API**. You'll need three values
-   from this page in step 3 below: the **Project URL**, the **anon public** key,
-   and the **service_role** key (click "reveal" to see it).
+2. Once it's created, open **Project Settings -> Data API**. You'll need two
+   values from this page in step 3 below: the **Project URL** and the
+   **anon public** key.
 3. Open the **SQL Editor** (left sidebar), click **New query**, paste in the
    entire contents of [`supabase/schema.sql`](supabase/schema.sql) from this
    repo, and click **Run**. This creates all the tables and security rules the
@@ -56,9 +56,9 @@ before starting a project.
 1. Push this repo to GitHub (already set up if you're reading this from there).
 2. Go to [vercel.com](https://vercel.com), sign up, click **Add New -> Project**,
    and import this GitHub repo.
-3. In the "Environment Variables" step, add the same four values from your
+3. In the "Environment Variables" step, add the same three values from your
    `.env.local` file (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-   `SUPABASE_SERVICE_ROLE_KEY`, `API_KEY_ENCRYPTION_SECRET`).
+   `API_KEY_ENCRYPTION_SECRET`).
 4. Click **Deploy**. Every future `git push` to the main branch will
    automatically redeploy the live site — nothing else to configure.
 
