@@ -21,6 +21,11 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  function generateForRandomArchetype() {
+    const randomArchetype = archetypes[Math.floor(Math.random() * archetypes.length)];
+    generateFor(randomArchetype, projectTypeId);
+  }
+
   function generateFor(archetype: Archetype, typeId: string) {
     setSelected(archetype);
     setError(null);
@@ -137,6 +142,13 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
+      <button
+        onClick={generateForRandomArchetype}
+        className="w-full rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-5 text-left transition hover:border-[var(--brand)]"
+      >
+        <h2 className="font-medium">Surprise me</h2>
+        <p className="mt-2 text-sm text-[var(--muted)]">Randomly pick one of the client personalities below.</p>
+      </button>
       {archetypes.map((archetype) => (
         <button
           key={archetype.id}
