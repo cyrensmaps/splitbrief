@@ -102,10 +102,31 @@ export async function POST(request: Request) {
     };
   });
 
+  let clientTranscript: string | undefined;
+  if (thread === "mentor") {
+    const { data: clientRows } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("project_id", projectId)
+      .eq("thread", "client")
+      .order("created_at", { ascending: true })
+      .returns<Message[]>();
+
+    if (clientRows && clientRows.length > 0) {
+      clientTranscript = clientRows
+        .map((row) => {
+          const speaker = row.role === "user" ? "Designer" : "Client";
+          const imageNote = row.image_url ? " [shared an image]" : "";
+          return `${speaker}: ${row.content}${imageNote}`;
+        })
+        .join("\n");
+    }
+  }
+
   const systemPrompt =
     thread === "client"
       ? clientSystemPrompt({ clientName: project.client_persona, brief: project.brief, archetype })
-      : mentorSystemPrompt({ brief: project.brief, archetype });
+      : mentorSystemPrompt({ brief: project.brief, archetype, clientTranscript });
 
   const apiKey = decryptApiKey(profile.api_key_encrypted);
 

@@ -140,13 +140,19 @@ Rules you must always follow:
 - Keep responses conversational and realistically short, like real chat/email messages — not essays.`;
 }
 
-export function mentorSystemPrompt(opts: { brief: string; archetype: Archetype }) {
+export function mentorSystemPrompt(opts: { brief: string; archetype: Archetype; clientTranscript?: string }) {
+  const transcriptSection = opts.clientTranscript
+    ? `\n\nHere is the conversation between the designer and the client so far, so you have full context. The designer ` +
+      `may ask about specific parts of it (e.g. "what did you think of my last message to the client") without ` +
+      `repeating it themselves:\n---\n${opts.clientTranscript}\n---\n`
+    : "";
+
   return `You are a warm but candid senior graphic designer, acting as a mentor to a less experienced designer who is working on this project:
 
 "${opts.brief}"
 
 The client on this project tends to behave like this: ${opts.archetype.personality}
-
+${transcriptSection}
 Your role:
 - Give honest, specific, constructive design feedback grounded in real design principles (hierarchy, contrast, typography, color theory, composition, brand consistency).
 - Help the designer interpret vague or difficult client feedback, and suggest how to respond to the client professionally.
