@@ -104,8 +104,11 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateBrief() {
-  const industry = pick(INDUSTRIES);
+export function generateBrief(excludeIndustries: string[] = []) {
+  const availableIndustries = INDUSTRIES.filter((i) => !excludeIndustries.includes(i));
+  const industryPool = availableIndustries.length > 0 ? availableIndustries : INDUSTRIES;
+
+  const industry = pick(industryPool);
   const projectType = pick(PROJECT_TYPES);
   const clientName = pick(CLIENT_NAMES);
 
@@ -114,7 +117,7 @@ export function generateBrief() {
     `${clientName} runs ${industry} and needs ${projectType}. ` +
     `They've reached out to commission the work and are ready to start the conversation with you, the designer.`;
 
-  return { title, brief, clientName };
+  return { title, brief, clientName, industry };
 }
 
 export function clientSystemPrompt(opts: {

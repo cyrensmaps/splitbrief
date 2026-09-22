@@ -3,13 +3,41 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ARCHETYPES, generateBrief } from "@/lib/ai/personas";
+import type { Project } from "@/lib/types";
 
-export async function createProject(formData: FormData) {
-  const archetypeId = formData.get("archetypeId") as string;
+export async function generateBriefPreview(archetypeId: string) {
   const archetype = ARCHETYPES.find((a) => a.id === archetypeId);
   if (!archetype) throw new Error("Unknown archetype");
 
-  const { title, brief, clientName } = generateBrief();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data: existing } = await supabase
+    .from("projects")
+    .select("industry")
+    .eq("user_id", user.id)
+    .returns<Pick<Project, "industry">[]>();
+
+  const usedIndustries = (existing ?? [])
+    .map((p) => p.industry)
+    .filter((industry): industry is string => Boolean(industry));
+
+  const brief = generateBrief(usedIndustries);
+  return { archetypeId: archetype.id, ...brief };
+}
+
+export async function createProject(payload: {
+  archetypeId: string;
+  title: string;
+  brief: string;
+  clientName: string;
+  industry: string;
+}) {
+  const archetype = ARCHETYPES.find((a) => a.id === payload.archetypeId);
+  if (!archetype) throw new Error("Unknown archetype");
 
   const supabase = await createClient();
   const {
@@ -21,10 +49,11 @@ export async function createProject(formData: FormData) {
     .from("projects")
     .insert({
       user_id: user.id,
-      title,
+      title: payload.title,
       archetype: archetype.id,
-      brief,
-      client_persona: clientName,
+      brief: payload.brief,
+      client_persona: payload.clientName,
+      industry: payload.industry,
     })
     .select("id")
     .single();

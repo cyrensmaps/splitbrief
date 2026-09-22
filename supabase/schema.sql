@@ -18,8 +18,14 @@ create table if not exists projects (
   archetype text not null,
   brief text not null,
   client_persona text not null,
+  industry text,
   created_at timestamptz not null default now()
 );
+
+-- If you're re-running this file against a database that already has the
+-- projects table (from before the "generate a new job" feature), this adds
+-- the missing column without touching existing rows.
+alter table projects add column if not exists industry text;
 
 -- Chat messages, one row per message, tagged to either the "client" or "mentor" thread.
 create table if not exists messages (

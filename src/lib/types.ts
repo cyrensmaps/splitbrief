@@ -5,6 +5,7 @@ export type Project = {
   archetype: string;
   brief: string;
   client_persona: string;
+  industry: string | null;
   created_at: string;
 };
 
