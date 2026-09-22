@@ -25,8 +25,10 @@ export async function getChatReply(opts: GetReplyOptions): Promise<string> {
 async function getAnthropicReply({ apiKey, model, systemPrompt, history }: GetReplyOptions) {
   const client = new Anthropic({ apiKey });
 
-  const messages: Anthropic.MessageParam[] = history.map((m) => {
-    const content: Anthropic.ContentBlockParam[] = [];
+  type ChatContentBlock = Anthropic.TextBlockParam | Anthropic.ImageBlockParam;
+
+  const messagesContent: ChatContentBlock[][] = history.map((m) => {
+    const content: ChatContentBlock[] = [];
     if (m.image) {
       content.push({
         type: "image",
@@ -38,13 +40,28 @@ async function getAnthropicReply({ apiKey, model, systemPrompt, history }: GetRe
       });
     }
     content.push({ type: "text", text: m.text || "(sent an image)" });
-    return { role: m.role, content };
+    return content;
   });
+
+  // Cache the prefix of the conversation that isn't the newest message, so a
+  // growing chat history doesn't get re-billed at full price on every turn.
+  if (messagesContent.length > 1) {
+    const prefixContent = messagesContent[messagesContent.length - 2];
+    prefixContent[prefixContent.length - 1].cache_control = { type: "ephemeral" };
+  }
+
+  const messages: Anthropic.MessageParam[] = history.map((m, i) => ({
+    role: m.role,
+    content: messagesContent[i],
+  }));
 
   const response = await client.messages.create({
     model,
     max_tokens: 4096,
-    system: systemPrompt,
+    // Cache the system prompt (persona + brief, and for the mentor, the full
+    // client transcript) since it's often byte-identical between consecutive
+    // messages in the same thread.
+    system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
     messages,
   });
 
