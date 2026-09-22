@@ -9,6 +9,27 @@ export type Project = {
   crit_notes: string | null;
   crit_notes_generated_at: string | null;
   difficulty: string;
+  assignment_id: string | null;
+  created_at: string;
+};
+
+export type Classroom = {
+  id: string;
+  owner_id: string;
+  name: string;
+  invite_code: string;
+  created_at: string;
+};
+
+export type Assignment = {
+  id: string;
+  classroom_id: string;
+  title: string;
+  archetype: string;
+  difficulty: string;
+  brief: string;
+  client_persona: string;
+  industry: string | null;
   created_at: string;
 };
 

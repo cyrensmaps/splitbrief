@@ -12,6 +12,9 @@ export function Navbar() {
           <Link href="/dashboard" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
             Projects
           </Link>
+          <Link href="/classroom" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
+            Classroom
+          </Link>
           <Link href="/settings" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
             Settings
           </Link>
