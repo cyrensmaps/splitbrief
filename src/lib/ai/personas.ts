@@ -86,13 +86,15 @@ const INDUSTRIES = [
   "a plant-based meal kit service",
 ];
 
-const PROJECT_TYPES = [
-  "a full brand identity (logo, color palette, typography)",
-  "a packaging redesign",
-  "a pitch deck template",
-  "a website homepage design",
-  "a social media style guide",
-  "an event poster and flyer set",
+export type ProjectTypePack = { id: string; label: string; phrase: string };
+
+export const PROJECT_TYPE_PACKS: ProjectTypePack[] = [
+  { id: "brand-identity", label: "Brand Identity", phrase: "a full brand identity (logo, color palette, typography)" },
+  { id: "packaging", label: "Packaging", phrase: "a packaging redesign" },
+  { id: "pitch-deck", label: "Pitch Deck", phrase: "a pitch deck template" },
+  { id: "web-ui", label: "Web / UI", phrase: "a website homepage design" },
+  { id: "social-media", label: "Social Media", phrase: "a social media style guide" },
+  { id: "print-event", label: "Print / Event", phrase: "an event poster and flyer set" },
 ];
 
 const CLIENT_NAMES = [
@@ -104,20 +106,22 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateBrief(excludeIndustries: string[] = []) {
+export function generateBrief(opts: { excludeIndustries?: string[]; projectTypeId?: string } = {}) {
+  const excludeIndustries = opts.excludeIndustries ?? [];
   const availableIndustries = INDUSTRIES.filter((i) => !excludeIndustries.includes(i));
   const industryPool = availableIndustries.length > 0 ? availableIndustries : INDUSTRIES;
 
   const industry = pick(industryPool);
-  const projectType = pick(PROJECT_TYPES);
+  const projectTypePack =
+    PROJECT_TYPE_PACKS.find((p) => p.id === opts.projectTypeId) ?? pick(PROJECT_TYPE_PACKS);
   const clientName = pick(CLIENT_NAMES);
 
-  const title = `${projectType[0].toUpperCase() + projectType.slice(1)} — ${industry}`;
+  const title = `${projectTypePack.label} — ${industry}`;
   const brief =
-    `${clientName} runs ${industry} and needs ${projectType}. ` +
+    `${clientName} runs ${industry} and needs ${projectTypePack.phrase}. ` +
     `They've reached out to commission the work and are ready to start the conversation with you, the designer.`;
 
-  return { title, brief, clientName, industry };
+  return { title, brief, clientName, industry, projectTypeId: projectTypePack.id };
 }
 
 export function clientSystemPrompt(opts: {

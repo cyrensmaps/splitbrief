@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ARCHETYPES, generateBrief } from "@/lib/ai/personas";
 import type { Project } from "@/lib/types";
 
-export async function generateBriefPreview(archetypeId: string) {
+export async function generateBriefPreview(archetypeId: string, projectTypeId?: string) {
   const archetype = ARCHETYPES.find((a) => a.id === archetypeId);
   if (!archetype) throw new Error("Unknown archetype");
 
@@ -25,7 +25,7 @@ export async function generateBriefPreview(archetypeId: string) {
     .map((p) => p.industry)
     .filter((industry): industry is string => Boolean(industry));
 
-  const brief = generateBrief(usedIndustries);
+  const brief = generateBrief({ excludeIndustries: usedIndustries, projectTypeId });
   return { archetypeId: archetype.id, ...brief };
 }
 

@@ -2,22 +2,30 @@
 
 import { useState, useTransition } from "react";
 import { generateBriefPreview, createProject } from "@/app/projects/new/actions";
-import type { Archetype } from "@/lib/ai/personas";
+import { PROJECT_TYPE_PACKS, type Archetype } from "@/lib/ai/personas";
 
-type Preview = { archetypeId: string; title: string; brief: string; clientName: string; industry: string };
+type Preview = {
+  archetypeId: string;
+  title: string;
+  brief: string;
+  clientName: string;
+  industry: string;
+  projectTypeId: string;
+};
 
 export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
   const [selected, setSelected] = useState<Archetype | null>(null);
+  const [projectTypeId, setProjectTypeId] = useState<string>("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  function generateFor(archetype: Archetype) {
+  function generateFor(archetype: Archetype, typeId: string) {
     setSelected(archetype);
     setError(null);
     startTransition(async () => {
       try {
-        const result = await generateBriefPreview(archetype.id);
+        const result = await generateBriefPreview(archetype.id, typeId || undefined);
         setPreview(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to generate a job");
@@ -56,6 +64,25 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
 
         <h2 className="font-medium">{selected.label}</h2>
 
+        <label className="mt-4 flex flex-col gap-1 text-sm">
+          Project type
+          <select
+            value={projectTypeId}
+            onChange={(e) => {
+              setProjectTypeId(e.target.value);
+              generateFor(selected, e.target.value);
+            }}
+            className="w-fit rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
+          >
+            <option value="">Surprise me</option>
+            {PROJECT_TYPE_PACKS.map((pack) => (
+              <option key={pack.id} value={pack.id}>
+                {pack.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
         {preview ? (
           <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">
             <h3 className="font-medium">{preview.title}</h3>
@@ -69,7 +96,7 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
 
         <div className="mt-5 flex items-center gap-3">
           <button
-            onClick={() => generateFor(selected)}
+            onClick={() => generateFor(selected, projectTypeId)}
             disabled={isPending}
             className="rounded-md border border-[var(--border)] px-4 py-2 text-sm disabled:opacity-60"
           >
@@ -92,7 +119,7 @@ export function ArchetypePicker({ archetypes }: { archetypes: Archetype[] }) {
       {archetypes.map((archetype) => (
         <button
           key={archetype.id}
-          onClick={() => generateFor(archetype)}
+          onClick={() => generateFor(archetype, projectTypeId)}
           className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5 text-left transition hover:border-[var(--brand)]"
         >
           <h2 className="font-medium">{archetype.label}</h2>
